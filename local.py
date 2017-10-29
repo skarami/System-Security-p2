@@ -9,7 +9,7 @@ from console import console
 
 
 def send_cmd(cmd):
-    try:
+
         port = int(sys.argv[1])
         sock = socket.create_connection(('127.0.0.1', port),
                                     socket.getdefaulttimeout(),
@@ -20,9 +20,6 @@ def send_cmd(cmd):
     
         sock.close()
     
-    except Exception as e:
-        print(e)
-        pass
     
 p = ''
 
