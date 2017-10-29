@@ -11,10 +11,14 @@ def console(sock):
     sys.stderr.flush()
 
     rlist = [sys.stdin, sock]
+    input_closed = False
     while True:
         wlist = []
         if stdin2sock:
             wlist.append(sock)
+        elif input_closed:
+            sock.shutdown(socket.SHUT_WR)
+            input_closed = False
         if sock2stdout:
             wlist.append(sys.stdout)
         rs, ws, xs = select.select(rlist, wlist, [])
@@ -24,7 +28,7 @@ def console(sock):
                 stdin2sock += data
             else:
                 rlist.remove(sys.stdin)
-                sock.shutdown(socket.SHUT_WR)
+                input_closed = True
         if sock in rs:
             data = sock.recv(4096)
             if data:
@@ -36,7 +40,6 @@ def console(sock):
             if amount:
                 sock2stdout = sock2stdout[amount:]
             else:
-                sock.shutdown(socket.SHUT_RD)
                 return
         if sock in ws:
             amount = sock.send(stdin2sock)
