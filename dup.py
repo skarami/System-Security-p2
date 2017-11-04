@@ -16,6 +16,7 @@ def send_cmd(cmd):
                                     ('127.0.0.1', 0))
 
         sock.sendall("a"*1020)
+	time.sleep(1)
         sock.sendall(cmd+"\r\n")
     
         while True:
