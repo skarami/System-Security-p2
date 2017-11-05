@@ -226,6 +226,7 @@ port = int(sys.argv[2])
 sock = socket.create_connection(('127.0.0.1', port),
                             socket.getdefaulttimeout(),
                             ('127.0.0.1', 0))
+
 console(sock)
 
 # :vim set sw=4 ts=8 sts=8 expandtab:
